@@ -1,8 +1,6 @@
 pipeline {
     agent any
-    tools { // Tools must be declared in Jenkins
-        maven 'Apache-Maven 3.6.3'
-    }
+    
     stages {
         stage ('Initialize') {
             steps {
@@ -12,16 +10,14 @@ pipeline {
                 '''
             }
         }
-        stage ('Build') {
+        stage ('Compile Stage') {
             steps {
-                sh '''
-                    echo "PATH = ${PATH}"
-                    echo "M2_HOME = ${M2_HOME}"
-                    mvn --version
-                    mvn -e -X install
-                '''
+                withMaven() {
+                    sh 'mvn --version'
+                    sh 'mvn clean compile'
+                }
             }
-        }
+       
         stage('Results') {
             steps {
                 junit 'target/surefire-reports/**/*.xml'
